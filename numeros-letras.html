@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6c5ce7">
+<title>Aprendo Jugando</title>
+<meta name="google-adsense-account" content="ca-pub-1991756615113090">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1991756615113090" crossorigin="anonymous"></script>
+<style>
+:root{--purple:#6c5ce7;--pink:#ff6b81;--blue:#1e90ff;--yellow:#ffd166;--green:#20bf6b;--ink:#273043}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(160deg,#eef4ff,#fff1f5);color:var(--ink)}
+header{text-align:center;padding:22px 14px 16px;background:linear-gradient(135deg,#6c5ce7,#a66cff);color:#fff;border-radius:0 0 28px 28px;box-shadow:0 5px 18px #6c5ce733}
+header h1{margin:0;font-size:clamp(1.7rem,6vw,2.5rem)}header p{margin:6px 0 0}
+main{max-width:850px;margin:auto;padding:14px}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+.stat{background:#fff;padding:8px 14px;border-radius:15px;box-shadow:0 3px 12px #28304412;font-weight:700}
+.langs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.lang{border:3px solid transparent;border-radius:15px;padding:9px 14px;background:#fff;color:var(--ink);font-weight:800;font-size:1rem;box-shadow:0 3px 12px #28304412;cursor:pointer}
+.lang.active{border-color:var(--purple);background:#efeaff}
+.langhint{text-align:center;margin:0 0 6px;font-size:.85rem;color:#687386}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+nav button{border:0;border-radius:15px;padding:12px 4px;background:var(--blue);color:#fff;font-size:clamp(.85rem,3.6vw,1rem);font-weight:800;box-shadow:0 4px 0 #1769aa}
+nav button.active{background:var(--purple);box-shadow:0 4px 0 #4a3bb4;transform:translateY(1px)}
+.panel{background:#fff;border-radius:22px;padding:16px;box-shadow:0 5px 20px #28304412}
+h2{margin:0 0 12px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.letters{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tile{border:0;border-radius:15px;min-height:64px;background:#f0f4ff;color:var(--ink);font-size:1.3rem;font-weight:900;box-shadow:inset 0 -3px #dce5ff;cursor:pointer}
+.tile small{display:block;font-size:.65rem;font-weight:600}
+.tile:active,.choice:active,.action:active{transform:scale(.96)}
+.tile.selected{background:#d9fbe8;box-shadow:inset 0 -3px #9be6b8}
+.note{text-align:center;font-size:.85rem;color:#687386;margin:10px 0 0}
+.bigcard{text-align:center;padding:14px}
+.bigemoji{font-size:4rem}
+.bigletter{font-size:4rem;color:var(--purple);font-weight:900;line-height:1.1}
+.example{font-size:1.25rem;font-weight:700}
+.action,.choice{border:0;border-radius:14px;padding:11px 16px;font-weight:800;font-size:1rem;cursor:pointer}
+.action{background:var(--purple);color:white}
+.action.secondary{background:#edf0ff;color:var(--purple)}
+.center{text-align:center}
+.game-emoji{font-size:3.2rem;margin:5px}
+.word{font-size:2rem;letter-spacing:7px;font-weight:900;color:#343b50;margin:12px}
+.choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.choice{background:#fff0f3;color:#c44569;border:2px solid #ffd3dc;min-width:52px;font-size:1.25rem}
+.choice.right{background:#d9fbe8;border-color:#9be6b8;color:#159957}
+.message{font-weight:800;min-height:28px;margin:12px 0 4px}
+.message.good{color:#159957}.message.bad{color:#d63031}
+.numbercard{background:#fff8dc;border-radius:18px}
+.count-items{font-size:2rem;line-height:1.5;min-height:80px;padding:6px 0}
+.count-items .item{display:inline-block;position:relative;margin:2px 5px 16px;opacity:.25;transition:transform .2s,opacity .2s}
+.count-items .item.on{opacity:1;transform:scale(1.2)}
+.count-items .item b{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);font-size:.7rem;line-height:1.3;background:var(--purple);color:#fff;border-radius:99px;padding:0 6px;font-family:system-ui,sans-serif}
+.count-items .zero{font-size:1.4rem;font-weight:800;color:#687386}
+footer{text-align:center;padding:8px 12px 22px;color:#687386;font-size:.85rem}
+.hidden{display:none!important}
+@media(min-width:600px){.grid{grid-template-columns:repeat(7,minmax(0,1fr))}.letters{grid-template-columns:repeat(7,minmax(0,1fr))}.tile{min-height:74px}}
+</style>
+</head>
+<body>
+<header><h1>🌈 Aprendo Jugando</h1><p>¡Aprender es una aventura!</p></header>
+<main>
+<div class="stats"><div class="stat">⭐ Puntos: <span id="points">0</span></div><div class="stat">🏆 Aciertos: <span id="hits">0</span></div></div>
+<div class="langs" id="langs" role="group" aria-label="Idioma que quiero aprender"></div>
+<p class="langhint">Elegí el idioma que querés aprender</p>
+<p class="langhint"><button class="action secondary" id="testVoice" type="button">🔊 Probar la voz</button></p>
+<p class="note" id="voiceMsg" style="color:#d63031"></p>
+<nav aria-label="Secciones">
+<button class="active" data-tab="letters">🔤 Letras</button>
+<button data-tab="numbers">🔢 Números</button>
+<button data-tab="game">🧩 Palabras</button>
+</nav>
+<section id="letters" class="panel">
+<h2>¡Tocá una letra y escuchá su nombre!</h2>
+<div id="letterGrid" class="grid letters"></div>
+<p class="note" id="langNote"></p>
+<div id="letterCard" class="bigcard hidden" aria-live="polite">
+<div class="bigletter" id="bigLetter">A a</div><div class="bigemoji" id="letterEmoji"></div>
+<div class="example" id="letterExample"></div>
+<p><button class="action" id="sayLetter">🔊 Repetir sonido</button></p>
+</div>
+</section>
+<section id="numbers" class="panel hidden">
+<h2>¡Tocá un número y contá con él!</h2>
+<div id="numberGrid" class="grid"></div>
+<div class="bigcard numbercard hidden" id="numberCard" aria-live="polite">
+<div class="bigletter" id="bigNumber">1</div>
+<div id="countItems" class="count-items"></div>
+<div class="example" id="numberWords"></div>
+<div class="example" id="numberSays"></div>
+<p><button class="action" id="sayNumber">🔊 Contar de nuevo</button></p>
+</div>
+</section>
+<section id="game" class="panel hidden">
+<h2>¡Completá la palabra y escuchá la respuesta!</h2>
+<p class="center">Elegí la letra que falta para ganar puntos.</p>
+<div class="center"><div class="game-emoji" id="gameEmoji"></div><div class="word" id="incompleteWord"></div><div class="choices" id="choices"></div><div class="message" id="gameMessage" aria-live="polite"></div><button class="action secondary" id="nextWord">Otra palabra ↻</button></div>
+</section>
+</main>
+<footer>Hecho para aprender jugando 💜<br>Los puntos se guardan en este dispositivo.<br><a href="privacidad.html" style="color:inherit">Política de privacidad</a></footer>
+<script>
+/*DATA_START*/
+const DATA={
+es:{code:'es-AR',name:'Español',flag:'🇦🇷',
+ letters:[['A','✈️','avión'],['B','🍌','banana'],['C','🏠','casa'],['D','🦷','diente'],['E','⭐','estrella'],['F','🌸','flor'],['G','🐱','gato'],['H','🍦','helado'],['I','⛪','iglesia'],['J','🦒','jirafa'],['K','🥝','kiwi'],['L','🦁','león'],['M','🍎','manzana'],['N','☁️','nube'],['Ñ','🍝','ñoquis'],['O','🐻','oso'],['P','🐟','pez'],['Q','🧀','queso'],['R','🤖','robot'],['S','☀️','sol'],['T','🐢','tortuga'],['U','🍇','uvas'],['V','🐄','vaca'],['W','🌐','web'],['X','🎹','xilófono'],['Y','🪀','yoyó'],['Z','🦊','zorro']],
+ numbers:['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'],
+ objs:[null,['una manzana','manzanas'],['una rana','ranas'],['una mariposa','mariposas'],['un auto','autos'],['una flor','flores'],['una pelota','pelotas'],['un pez','peces'],['una frutilla','frutillas'],['un cohete','cohetes'],['una estrella','estrellas']],
+ letterText:(L,w)=>L+' de '+w,
+ letterSay:(L,w)=>'La letra '+L+'. '+L+' de '+w+'.',
+ zeroShow:'Nada',zeroSay:'Cero. No hay nada.',
+ ok:w=>'¡Muy bien! La palabra es '+w+'.',
+ bad:(a,w)=>'La letra correcta es '+a+'. La palabra es '+w+'.',
+ note:'',
+ words:[['🐶','PERRO'],['🐱','GATO'],['🐭','RATÓN'],['🐹','HÁMSTER'],['🐰','CONEJO'],['🦊','ZORRO'],['🐻','OSO'],['🐼','PANDA'],['🐨','KOALA'],['🐯','TIGRE'],['🦁','LEÓN'],['🐮','VACA'],['🐷','CERDO'],['🐸','RANA'],['🐵','MONO'],['🐔','GALLINA'],['🐧','PINGÜINO'],['🐦','PÁJARO'],['🦆','PATO'],['🦉','BÚHO'],['🦇','MURCIÉLAGO'],['🐺','LOBO'],['🐗','JABALÍ'],['🐴','CABALLO'],['🦄','UNICORNIO'],['🐝','ABEJA'],['🐛','ORUGA'],['🦋','MARIPOSA'],['🐌','CARACOL'],['🐞','MARIQUITA'],['🐜','HORMIGA'],['🕷️','ARAÑA'],['🐢','TORTUGA'],['🐍','SERPIENTE'],['🦎','LAGARTIJA'],['🦖','DINOSAURIO'],['🐙','PULPO'],['🦑','CALAMAR'],['🦀','CANGREJO'],['🐟','PEZ'],['🐬','DELFÍN'],['🐳','BALLENA'],['🦈','TIBURÓN'],['🐘','ELEFANTE'],['🦒','JIRAFA'],['🦓','CEBRA'],['🦏','RINOCERONTE'],['🦛','HIPOPÓTAMO'],['🐪','CAMELLO'],['🦘','CANGURO'],['🐑','OVEJA'],['🐐','CABRA'],['🦌','CIERVO'],['🐓','GALLO'],['🦃','PAVO'],['🦢','CISNE'],['🦜','LORO'],['🦩','FLAMENCO'],['🐊','COCODRILO'],['🦔','ERIZO'],['🦥','PEREZOSO'],['🦦','NUTRIA'],['🐿️','ARDILLA'],['🦅','ÁGUILA'],['🐣','POLLITO'],['🍎','MANZANA'],['🍐','PERA'],['🍊','NARANJA'],['🍋','LIMÓN'],['🍌','BANANA'],['🍉','SANDÍA'],['🍇','UVAS'],['🍓','FRUTILLA'],['🍒','CEREZAS'],['🍍','PIÑA'],['🥭','MANGO'],['🥥','COCO'],['🥝','KIWI'],['🍅','TOMATE'],['🥑','PALTA'],['🥕','ZANAHORIA'],['🌽','CHOCLO'],['🥔','PAPA'],['🥦','BRÓCOLI'],['🧄','AJO'],['🧅','CEBOLLA'],['🍄','HONGO'],['🥜','MANÍ'],['🍞','PAN'],['🥐','MEDIALUNA'],['🧀','QUESO'],['🥚','HUEVO'],['🥓','TOCINO'],['🍔','HAMBURGUESA'],['🍕','PIZZA'],['🌭','PANCHO'],['🍝','FIDEOS'],['🍚','ARROZ'],['🍦','HELADO'],['🍰','TORTA'],['🍪','GALLETA'],['🍩','DONA'],['🍫','CHOCOLATE'],['🍬','CARAMELO'],['🍭','CHUPETÍN'],['🍿','POCHOCLO'],['🥛','LECHE'],['🍵','TÉ'],['🧃','JUGO'],['💧','AGUA'],['🍯','MIEL'],['🧂','SAL'],['☀️','SOL'],['🌙','LUNA'],['⭐','ESTRELLA'],['☁️','NUBE'],['🌧️','LLUVIA'],['❄️','NIEVE'],['⚡','RAYO'],['🌈','ARCOÍRIS'],['🔥','FUEGO'],['🌊','OLA'],['🌍','TIERRA'],['🌳','ÁRBOL'],['🌴','PALMERA'],['🌵','CACTUS'],['🌸','FLOR'],['🌹','ROSA'],['🌻','GIRASOL'],['🍀','TRÉBOL'],['🍁','HOJA'],['🌋','VOLCÁN'],['⛰️','MONTAÑA'],['🏝️','ISLA'],['🏖️','PLAYA'],['⚽','PELOTA'],['🎲','DADO'],['🧸','PELUCHE'],['🎈','GLOBO'],['🎁','REGALO'],['🎸','GUITARRA'],['🥁','TAMBOR'],['🎹','PIANO'],['🎺','TROMPETA'],['🎻','VIOLÍN'],['🎤','MICRÓFONO'],['🎧','AURICULARES'],['📖','LIBRO'],['✏️','LÁPIZ'],['✂️','TIJERAS'],['📏','REGLA'],['🔑','LLAVE'],['🔒','CANDADO'],['💡','LAMPARITA'],['⏰','RELOJ'],['📱','CELULAR'],['💻','COMPUTADORA'],['📷','CÁMARA'],['🔦','LINTERNA'],['🧲','IMÁN'],['🪑','SILLA'],['🛏️','CAMA'],['🚪','PUERTA'],['🧹','ESCOBA'],['🧼','JABÓN'],['👓','ANTEOJOS'],['🎒','MOCHILA'],['☂️','PARAGUAS'],['👑','CORONA'],['💎','DIAMANTE'],['🔔','CAMPANA'],['🏆','COPA'],['🪁','BARRILETE'],['⛺','CARPA'],['🧱','LADRILLO'],['🗺️','MAPA'],['🏠','CASA'],['🏰','CASTILLO'],['⛪','IGLESIA'],['🏫','ESCUELA'],['🏥','HOSPITAL'],['🏨','HOTEL'],['🌉','PUENTE'],['🗼','TORRE'],['🚗','AUTO'],['🚕','TAXI'],['🚌','COLECTIVO'],['🚑','AMBULANCIA'],['🚒','AUTOBOMBA'],['🚚','CAMIÓN'],['🚜','TRACTOR'],['🚲','BICICLETA'],['🛵','MOTO'],['✈️','AVIÓN'],['🚁','HELICÓPTERO'],['🚀','COHETE'],['🚂','TREN'],['🚢','BARCO'],['⛵','VELERO'],['🛶','CANOA'],['⚓','ANCLA'],['👁️','OJO'],['👃','NARIZ'],['👂','OREJA'],['👄','BOCA'],['🦷','DIENTE'],['✋','MANO'],['🦶','PIE'],['🦴','HUESO'],['🧠','CEREBRO'],['❤️','CORAZÓN'],['👶','BEBÉ'],['👕','REMERA'],['👖','PANTALÓN'],['👗','VESTIDO'],['🧦','MEDIAS'],['👟','ZAPATILLA'],['🧢','GORRA'],['🎩','SOMBRERO'],['🧤','GUANTES'],['🧣','BUFANDA'],['👜','CARTERA'],['💍','ANILLO'],['🔴','ROJO'],['🟡','AMARILLO'],['🟢','VERDE'],['🔵','AZUL'],['🟣','VIOLETA'],['⚫','NEGRO'],['⚪','BLANCO'],['🎃','CALABAZA'],['👻','FANTASMA'],['🤖','ROBOT'],['👽','ALIEN'],['🐉','DRAGÓN'],['🧙','MAGO'],['🧚','HADA'],['🧜','SIRENA']]
+},
+en:{code:'en-US',name:'English',flag:'🇬🇧',
+ letters:[['A','🍎','apple'],['B','🍌','banana'],['C','🐱','cat'],['D','🐶','dog'],['E','🐘','elephant'],['F','🐟','fish'],['G','🦒','giraffe'],['H','🏠','house'],['I','🍦','ice cream'],['J','🧃','juice'],['K','🪁','kite'],['L','🦁','lion'],['M','🌙','moon'],['N','👃','nose'],['O','🍊','orange'],['P','🍕','pizza'],['Q','❓','question'],['R','🌈','rainbow'],['S','☀️','sun'],['T','🌳','tree'],['U','☂️','umbrella'],['V','🎻','violin'],['W','🍉','watermelon'],['X','🎹','xylophone'],['Y','🪀','yo-yo'],['Z','🦓','zebra']],
+ numbers:['zero','one','two','three','four','five','six','seven','eight','nine','ten'],
+ objs:[null,['one apple','apples'],['one frog','frogs'],['one butterfly','butterflies'],['one car','cars'],['one flower','flowers'],['one ball','balls'],['one fish','fish'],['one strawberry','strawberries'],['one rocket','rockets'],['one star','stars']],
+ letterText:(L,w)=>L+' is for '+w,
+ letterSay:(L,w)=>'Letter '+L+'. '+L+' is for '+w+'.',
+ zeroShow:'Nothing',zeroSay:'Zero. There is nothing here.',
+ ok:w=>'Very good! The word is '+w+'.',
+ bad:(a,w)=>'The correct letter is '+a+'. The word is '+w+'.',
+ note:'',
+ words:[['🐶','DOG'],['🐱','CAT'],['🐭','MOUSE'],['🐹','HAMSTER'],['🐰','RABBIT'],['🦊','FOX'],['🐻','BEAR'],['🐼','PANDA'],['🐨','KOALA'],['🐯','TIGER'],['🦁','LION'],['🐮','COW'],['🐷','PIG'],['🐸','FROG'],['🐵','MONKEY'],['🐔','CHICKEN'],['🐧','PENGUIN'],['🐦','BIRD'],['🦆','DUCK'],['🦉','OWL'],['🦇','BAT'],['🐺','WOLF'],['🐗','BOAR'],['🐴','HORSE'],['🦄','UNICORN'],['🐝','BEE'],['🐛','CATERPILLAR'],['🦋','BUTTERFLY'],['🐌','SNAIL'],['🐞','LADYBUG'],['🐜','ANT'],['🕷️','SPIDER'],['🐢','TURTLE'],['🐍','SNAKE'],['🦎','LIZARD'],['🦖','DINOSAUR'],['🐙','OCTOPUS'],['🦑','SQUID'],['🦀','CRAB'],['🐟','FISH'],['🐬','DOLPHIN'],['🐳','WHALE'],['🦈','SHARK'],['🐘','ELEPHANT'],['🦒','GIRAFFE'],['🦓','ZEBRA'],['🦏','RHINO'],['🦛','HIPPO'],['🐪','CAMEL'],['🦘','KANGAROO'],['🐑','SHEEP'],['🐐','GOAT'],['🦌','DEER'],['🐓','ROOSTER'],['🦃','TURKEY'],['🦢','SWAN'],['🦜','PARROT'],['🦩','FLAMINGO'],['🐊','CROCODILE'],['🦔','HEDGEHOG'],['🦥','SLOTH'],['🦦','OTTER'],['🐿️','SQUIRREL'],['🦅','EAGLE'],['🐣','CHICK'],['🍎','APPLE'],['🍐','PEAR'],['🍊','ORANGE'],['🍋','LEMON'],['🍌','BANANA'],['🍉','WATERMELON'],['🍇','GRAPES'],['🍓','STRAWBERRY'],['🍒','CHERRIES'],['🍍','PINEAPPLE'],['🥭','MANGO'],['🥥','COCONUT'],['🥝','KIWI'],['🍅','TOMATO'],['🥑','AVOCADO'],['🥕','CARROT'],['🌽','CORN'],['🥔','POTATO'],['🥦','BROCCOLI'],['🧄','GARLIC'],['🧅','ONION'],['🍄','MUSHROOM'],['🥜','PEANUT'],['🍞','BREAD'],['🥐','CROISSANT'],['🧀','CHEESE'],['🥚','EGG'],['🥓','BACON'],['🍔','HAMBURGER'],['🍕','PIZZA'],['🌭','HOTDOG'],['🍝','SPAGHETTI'],['🍚','RICE'],['🍰','CAKE'],['🍪','COOKIE'],['🍩','DONUT'],['🍫','CHOCOLATE'],['🍬','CANDY'],['🍭','LOLLIPOP'],['🍿','POPCORN'],['🥛','MILK'],['🍵','TEA'],['🧃','JUICE'],['💧','WATER'],['🍯','HONEY'],['🧂','SALT'],['☀️','SUN'],['🌙','MOON'],['⭐','STAR'],['☁️','CLOUD'],['🌧️','RAIN'],['❄️','SNOW'],['⚡','LIGHTNING'],['🌈','RAINBOW'],['🔥','FIRE'],['🌊','WAVE'],['🌍','EARTH'],['🌳','TREE'],['🌴','PALM'],['🌵','CACTUS'],['🌸','FLOWER'],['🌹','ROSE'],['🌻','SUNFLOWER'],['🍀','CLOVER'],['🍁','LEAF'],['🌋','VOLCANO'],['⛰️','MOUNTAIN'],['🏝️','ISLAND'],['🏖️','BEACH'],['⚽','BALL'],['🎲','DICE'],['🧸','TEDDY'],['🎈','BALLOON'],['🎁','GIFT'],['🎸','GUITAR'],['🥁','DRUM'],['🎹','PIANO'],['🎺','TRUMPET'],['🎻','VIOLIN'],['🎤','MICROPHONE'],['🎧','HEADPHONES'],['📖','BOOK'],['✏️','PENCIL'],['✂️','SCISSORS'],['📏','RULER'],['🔑','KEY'],['🔒','LOCK'],['💡','BULB'],['⏰','CLOCK'],['📱','PHONE'],['💻','COMPUTER'],['📷','CAMERA'],['🔦','FLASHLIGHT'],['🧲','MAGNET'],['🪑','CHAIR'],['🛏️','BED'],['🚪','DOOR'],['🧹','BROOM'],['🧼','SOAP'],['👓','GLASSES'],['🎒','BACKPACK'],['☂️','UMBRELLA'],['👑','CROWN'],['💎','DIAMOND'],['🔔','BELL'],['🏆','TROPHY'],['🪁','KITE'],['⛺','TENT'],['🧱','BRICK'],['🗺️','MAP'],['🏠','HOUSE'],['🏰','CASTLE'],['⛪','CHURCH'],['🏫','SCHOOL'],['🏥','HOSPITAL'],['🏨','HOTEL'],['🌉','BRIDGE'],['🗼','TOWER'],['🚗','CAR'],['🚕','TAXI'],['🚌','BUS'],['🚑','AMBULANCE'],['🚒','FIRETRUCK'],['🚚','TRUCK'],['🚜','TRACTOR'],['🚲','BICYCLE'],['🛵','SCOOTER'],['✈️','AIRPLANE'],['🚁','HELICOPTER'],['🚀','ROCKET'],['🚂','TRAIN'],['🚢','SHIP'],['⛵','SAILBOAT'],['🛶','CANOE'],['⚓','ANCHOR'],['👁️','EYE'],['👃','NOSE'],['👂','EAR'],['👄','MOUTH'],['🦷','TOOTH'],['✋','HAND'],['🦶','FOOT'],['🦴','BONE'],['🧠','BRAIN'],['❤️','HEART'],['👶','BABY'],['👕','SHIRT'],['👖','JEANS'],['👗','DRESS'],['🧦','SOCKS'],['👟','SHOE'],['🧢','CAP'],['🎩','HAT'],['🧤','GLOVES'],['🧣','SCARF'],['👜','BAG'],['💍','RING'],['🔴','RED'],['🟡','YELLOW'],['🟢','GREEN'],['🔵','BLUE'],['🟣','PURPLE'],['⚫','BLACK'],['⚪','WHITE'],['🎃','PUMPKIN'],['👻','GHOST'],['🤖','ROBOT'],['👽','ALIEN'],['🐉','DRAGON'],['🧙','WIZARD'],['🧚','FAIRY'],['🧜','MERMAID']]
+},
+it:{code:'it-IT',name:'Italiano',flag:'🇮🇹',
+ letters:[['A','✈️','aereo'],['B','🍌','banana'],['C','🏠','casa'],['D','🎲','dado'],['E','🐘','elefante'],['F','🌸','fiore'],['G','🐱','gatto'],['H','🏨','hotel'],['I','🏝️','isola'],['L','🦁','leone'],['M','🍎','mela'],['N','👃','naso'],['O','🐻','orso'],['P','🍕','pizza'],['Q','🖼️','quadro'],['R','🐸','rana'],['S','☀️','sole'],['T','🐢','tartaruga'],['U','🍇','uva'],['V','🦊','volpe'],['Z','🦓','zebra']],
+ numbers:['zero','uno','due','tre','quattro','cinque','sei','sette','otto','nove','dieci'],
+ objs:[null,['una mela','mele'],['una rana','rane'],['una farfalla','farfalle'],['una macchina','macchine'],['un fiore','fiori'],['una palla','palle'],['un pesce','pesci'],['una fragola','fragole'],['un razzo','razzi'],['una stella','stelle']],
+ letterText:(L,w)=>L+' come '+w,
+ letterSay:(L,w)=>'Lettera '+L+'. '+L+' come '+w+'.',
+ zeroShow:'Niente',zeroSay:'Zero. Non c\u2019è niente.',
+ ok:w=>'Bravissimo! La parola è '+w+'.',
+ bad:(a,w)=>'La lettera giusta è '+a+'. La parola è '+w+'.',
+ note:'El alfabeto italiano tiene 21 letras. La J, K, W, X e Y se usan solo en palabras extranjeras.',
+ words:[['🐶','CANE'],['🐱','GATTO'],['🐭','TOPO'],['🐹','CRICETO'],['🐰','CONIGLIO'],['🦊','VOLPE'],['🐻','ORSO'],['🐼','PANDA'],['🐨','KOALA'],['🐯','TIGRE'],['🦁','LEONE'],['🐮','MUCCA'],['🐷','MAIALE'],['🐸','RANA'],['🐵','SCIMMIA'],['🐔','GALLINA'],['🐧','PINGUINO'],['🦆','ANATRA'],['🦉','GUFO'],['🦇','PIPISTRELLO'],['🐺','LUPO'],['🐗','CINGHIALE'],['🐴','CAVALLO'],['🦄','UNICORNO'],['🐝','APE'],['🐛','BRUCO'],['🦋','FARFALLA'],['🐌','LUMACA'],['🐞','COCCINELLA'],['🐜','FORMICA'],['🕷️','RAGNO'],['🐢','TARTARUGA'],['🐍','SERPENTE'],['🦎','LUCERTOLA'],['🦖','DINOSAURO'],['🐙','POLPO'],['🦑','CALAMARO'],['🦀','GRANCHIO'],['🐟','PESCE'],['🐬','DELFINO'],['🐳','BALENA'],['🦈','SQUALO'],['🐘','ELEFANTE'],['🦒','GIRAFFA'],['🦓','ZEBRA'],['🦏','RINOCERONTE'],['🦛','IPPOPOTAMO'],['🐪','CAMMELLO'],['🦘','CANGURO'],['🐑','PECORA'],['🐐','CAPRA'],['🦌','CERVO'],['🐓','GALLO'],['🦃','TACCHINO'],['🦢','CIGNO'],['🦜','PAPPAGALLO'],['🦩','FENICOTTERO'],['🐊','COCCODRILLO'],['🦔','RICCIO'],['🦥','BRADIPO'],['🦦','LONTRA'],['🐿️','SCOIATTOLO'],['🦅','AQUILA'],['🐣','PULCINO'],['🍎','MELA'],['🍐','PERA'],['🍊','ARANCIA'],['🍋','LIMONE'],['🍌','BANANA'],['🍉','ANGURIA'],['🍇','UVA'],['🍓','FRAGOLA'],['🍒','CILIEGIE'],['🍍','ANANAS'],['🥭','MANGO'],['🥥','COCCO'],['🥝','KIWI'],['🍅','POMODORO'],['🥑','AVOCADO'],['🥕','CAROTA'],['🌽','MAIS'],['🥦','BROCCOLO'],['🧄','AGLIO'],['🧅','CIPOLLA'],['🍄','FUNGO'],['🥜','ARACHIDE'],['🍞','PANE'],['🥐','CORNETTO'],['🧀','FORMAGGIO'],['🥚','UOVO'],['🥓','PANCETTA'],['🍔','HAMBURGER'],['🍕','PIZZA'],['🌭','HOTDOG'],['🍝','SPAGHETTI'],['🍚','RISO'],['🍦','GELATO'],['🍰','TORTA'],['🍪','BISCOTTO'],['🍩','CIAMBELLA'],['🍫','CIOCCOLATO'],['🍬','CARAMELLA'],['🍭','LECCALECCA'],['🍿','POPCORN'],['🥛','LATTE'],['🍵','TÈ'],['🧃','SUCCO'],['💧','ACQUA'],['🍯','MIELE'],['🧂','SALE'],['☀️','SOLE'],['🌙','LUNA'],['⭐','STELLA'],['☁️','NUVOLA'],['🌧️','PIOGGIA'],['❄️','NEVE'],['⚡','FULMINE'],['🌈','ARCOBALENO'],['🔥','FUOCO'],['🌊','ONDA'],['🌍','TERRA'],['🌳','ALBERO'],['🌴','PALMA'],['🌵','CACTUS'],['🌸','FIORE'],['🌹','ROSA'],['🌻','GIRASOLE'],['🍀','TRIFOGLIO'],['🍁','FOGLIA'],['🌋','VULCANO'],['⛰️','MONTAGNA'],['🏝️','ISOLA'],['🏖️','SPIAGGIA'],['⚽','PALLA'],['🎲','DADO'],['🧸','PELUCHE'],['🎈','PALLONCINO'],['🎁','REGALO'],['🎸','CHITARRA'],['🥁','TAMBURO'],['🎹','PIANO'],['🎻','VIOLINO'],['🎤','MICROFONO'],['🎧','CUFFIE'],['📖','LIBRO'],['✏️','MATITA'],['✂️','FORBICI'],['📏','RIGHELLO'],['🔑','CHIAVE'],['🔒','LUCCHETTO'],['💡','LAMPADINA'],['⏰','OROLOGIO'],['📱','TELEFONO'],['💻','COMPUTER'],['📷','FOTOCAMERA'],['🔦','TORCIA'],['🧲','MAGNETE'],['🪑','SEDIA'],['🛏️','LETTO'],['🚪','PORTA'],['🧼','SAPONE'],['👓','OCCHIALI'],['🎒','ZAINO'],['☂️','OMBRELLO'],['👑','CORONA'],['💎','DIAMANTE'],['🔔','CAMPANA'],['🏆','COPPA'],['🪁','AQUILONE'],['⛺','TENDA'],['🧱','MATTONE'],['🗺️','MAPPA'],['🏠','CASA'],['🏰','CASTELLO'],['⛪','CHIESA'],['🏫','SCUOLA'],['🏥','OSPEDALE'],['🏨','HOTEL'],['🌉','PONTE'],['🗼','TORRE'],['🚗','MACCHINA'],['🚕','TAXI'],['🚌','AUTOBUS'],['🚑','AMBULANZA'],['🚒','AUTOPOMPA'],['🚚','CAMION'],['🚜','TRATTORE'],['🚲','BICICLETTA'],['🛵','MOTORINO'],['✈️','AEREO'],['🚁','ELICOTTERO'],['🚀','RAZZO'],['🚂','TRENO'],['🚢','NAVE'],['⛵','VELIERO'],['🛶','CANOA'],['⚓','ANCORA'],['👁️','OCCHIO'],['👃','NASO'],['👂','ORECCHIO'],['👄','BOCCA'],['🦷','DENTE'],['✋','MANO'],['🦶','PIEDE'],['🦴','OSSO'],['🧠','CERVELLO'],['❤️','CUORE'],['👶','BAMBINO'],['👕','MAGLIETTA'],['👖','JEANS'],['👗','VESTITO'],['🧦','CALZINI'],['👟','SCARPA'],['🧢','BERRETTO'],['🎩','CAPPELLO'],['🧤','GUANTI'],['🧣','SCIARPA'],['👜','BORSA'],['💍','ANELLO'],['🔴','ROSSO'],['🟡','GIALLO'],['🟢','VERDE'],['🔵','BLU'],['🟣','VIOLA'],['⚫','NERO'],['⚪','BIANCO'],['🎃','ZUCCA'],['👻','FANTASMA'],['🤖','ROBOT'],['👽','ALIENO'],['🐉','DRAGO'],['🧙','MAGO'],['🧚','FATA'],['🧜','SIRENA']]
+}
+};
+const NUM_EMOJIS=['','🍎','🐸','🦋','🚗','🌼','⚽','🐠','🍓','🚀','⭐'];
+/*DATA_END*/
+
+const $=id=>document.getElementById(id);
+function ls(k,d){try{const v=localStorage.getItem(k);return v===null?d:v}catch(e){return d}}
+function ss(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+let lang=ls('aj_lang','es');if(!DATA[lang])lang='es';
+let points=Number(ls('aj_points',0))||0,hits=Number(ls('aj_hits',0))||0;
+const cur=()=>DATA[lang];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const shuffle=a=>a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(x=>x[1]);
+function updateStats(){$('points').textContent=points;$('hits').textContent=hits;ss('aj_points',points);ss('aj_hits',hits)}
+
+/* ---------- Voz ---------- */
+const ttsOk=()=>('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+let warned=false;
+function warn(m){if(warned)return;warned=true;alert(m)}
+const keep=[]; /* Chrome corta las voces que no se guardan en una variable antes de que suenen */
+function voiceList(){try{return window.speechSynthesis.getVoices()||[]}catch(e){return []}}
+function pickVoice(code){
+  const voices=voiceList(),norm=v=>v.lang.replace('_','-').toLowerCase(),base=code.slice(0,2).toLowerCase();
+  return voices.find(v=>norm(v)===code.toLowerCase())||voices.find(v=>norm(v).slice(0,2)===base)||null;
+}
+function makeUtter(text,code){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang=code;u.rate=0.85;u.pitch=1;u.volume=1;
+  const v=pickVoice(code);if(v){u.voice=v;u.lang=v.lang}
+  u.onerror=e=>{if(e&&(e.error==='interrupted'||e.error==='canceled'))return;warn('No se pudo reproducir la voz. Revisá el volumen y que tu teléfono tenga instalado el motor de texto a voz con el idioma elegido.')};
+  u.onend=()=>{const i=keep.indexOf(u);if(i>=0)keep.splice(i,1)};
+  keep.push(u);
+  return u;
+}
+let speakTimer=null;
+function say(utts){
+  clearTimeout(speakTimer);
+  const syn=window.speechSynthesis;
+  syn.cancel();
+  /* En Android, hablar justo después de cancelar a veces no suena: se espera un instante */
+  speakTimer=setTimeout(()=>{utts.forEach(u=>syn.speak(u));if(syn.paused)syn.resume()},120);
+}
+function speak(text,code){
+  if(!ttsOk()){warn('Este navegador no ofrece lectura por voz. Abrí el juego en Google Chrome y probá de nuevo.');return false}
+  try{say([makeUtter(text,code||cur().code)]);return true}
+  catch(e){warn('No se pudo activar la voz. Probá abrir el juego en Google Chrome.');return false}
+}
+function speakSeq(list,code,onStart){
+  if(!ttsOk()){warn('Este navegador no ofrece lectura por voz. Abrí el juego en Google Chrome y probá de nuevo.');return false}
+  try{
+    const utts=list.map((t,i)=>{const u=makeUtter(t,code);u.onstart=()=>onStart&&onStart(i);return u});
+    say(utts);return true;
+  }catch(e){warn('No se pudo activar la voz. Probá abrir el juego en Google Chrome.');return false}
+}
+function stopVoice(){clearTimeout(speakTimer);try{if(ttsOk())window.speechSynthesis.cancel()}catch(e){}}
+
+/* Aviso si el teléfono no tiene la voz del idioma elegido */
+function checkVoice(){
+  const m=$('voiceMsg');if(!m)return;
+  if(!ttsOk()){m.textContent='🔇 Este navegador no puede leer en voz alta. Abrí el juego en Google Chrome.';return}
+  if(voiceList().length&&!pickVoice(cur().code))m.textContent='🔇 Tu teléfono no tiene la voz de '+cur().name+'. Instalala en Ajustes > Sistema > Idioma > Salida de texto a voz.';
+  else m.textContent='';
+}
+if(ttsOk()){voiceList();window.speechSynthesis.onvoiceschanged=checkVoice}
+
+/* Botón para probar la voz */
+const TESTS={es:'Hola. Si escuchás esto, la voz funciona.',en:'Hello! If you can hear this, the voice works.',it:'Ciao! Se senti questa voce, funziona.'};
+$('testVoice').onclick=()=>{
+  const m=$('voiceMsg');
+  if(!ttsOk()){checkVoice();return}
+  let started=false;
+  const u=makeUtter(TESTS[lang],cur().code);u.onstart=()=>{started=true};
+  say([u]);
+  setTimeout(()=>{if(!started)m.textContent='🔇 No se escuchó nada. Subí el volumen multimedia y revisá que tengan instalados los "Servicios de voz de Google" en el teléfono.'},2500);
+};
+
+/* ---------- Pestañas ---------- */
+function showTab(tab){document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['letters','numbers','game'].forEach(id=>$(id).classList.toggle('hidden',id!==tab))}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+
+/* ---------- Letras ---------- */
+let lastLetterSay='';
+function renderLetters(){
+  const d=cur(),grid=$('letterGrid');
+  grid.innerHTML='';$('letterCard').classList.add('hidden');$('langNote').textContent=d.note||'';
+  d.letters.forEach(([l,e,w])=>{
+    const b=document.createElement('button');
+    b.className='tile';b.innerHTML=l+'<small>'+l.toLowerCase()+'</small>';b.setAttribute('aria-label','Letra '+l);
+    b.onclick=()=>{
+      grid.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));b.classList.add('selected');
+      $('letterCard').classList.remove('hidden');
+      $('bigLetter').textContent=l+' '+l.toLowerCase();$('letterEmoji').textContent=e;$('letterExample').textContent=d.letterText(l,w);
+      lastLetterSay=d.letterSay(l,w);speak(lastLetterSay,d.code);
+    };
+    grid.appendChild(b);
+  });
+}
+$('sayLetter').onclick=()=>{if(lastLetterSay)speak(lastLetterSay,cur().code)};
+
+/* ---------- Números: se cuentan uno por uno y se nombra lo que hay ---------- */
+let countTimers=[],lastNumber=-1;
+function clearCount(){countTimers.forEach(clearTimeout);countTimers=[]}
+function phrase(n){const d=cur(),o=d.objs[n];return n===1?cap(o[0]):cap(d.numbers[n]+' '+o[1])}
+function runCount(n){
+  const d=cur(),spans=[...$('countItems').querySelectorAll('.item')];
+  clearCount();spans.forEach(s=>s.classList.remove('on'));
+  if(n===0){speak(d.zeroSay,d.code);return}
+  const seq=[];for(let i=1;i<=n;i++)seq.push(d.numbers[i]);seq.push(phrase(n));
+  if(ttsOk()){
+    let started=false;
+    speakSeq(seq,d.code,i=>{started=true;if(i<n&&spans[i])spans[i].classList.add('on')});
+    countTimers.push(setTimeout(()=>{if(!started)spans.forEach(s=>s.classList.add('on'))},2000));
+  }else{
+    spans.forEach((s,i)=>countTimers.push(setTimeout(()=>s.classList.add('on'),i*700)));
+    warn('Este navegador no ofrece lectura por voz. Abrí la app en Google Chrome y probá de nuevo.');
+  }
+}
+function showNumber(n){
+  const d=cur(),box=$('countItems');
+  lastNumber=n;
+  $('numberCard').classList.remove('hidden');$('bigNumber').textContent=n;
+  box.innerHTML='';
+  if(n===0){box.innerHTML='<span class="zero">'+d.zeroShow+'</span>';$('numberWords').textContent='0 = '+d.numbers[0];$('numberSays').textContent=d.zeroSay}
+  else{
+    for(let i=1;i<=n;i++){const s=document.createElement('span');s.className='item';s.innerHTML=NUM_EMOJIS[n]+'<b>'+i+'</b>';box.appendChild(s)}
+    $('numberWords').textContent=n+' = '+d.numbers[n];$('numberSays').textContent=phrase(n);
+  }
+  runCount(n);
+}
+for(let n=0;n<=10;n++){
+  const b=document.createElement('button');b.className='tile';b.textContent=n;
+  b.onclick=()=>{document.querySelectorAll('#numberGrid .tile').forEach(t=>t.classList.remove('selected'));b.classList.add('selected');showNumber(n)};
+  $('numberGrid').appendChild(b);
+}
+$('sayNumber').onclick=()=>{if(lastNumber>=0)showNumber(lastNumber)};
+
+/* ---------- Palabras: la letra que falta se arma sola para cada palabra ---------- */
+let order=[],oi=0,answered=false;
+const VOWELS='AEIOU';
+function renderWord(){
+  answered=false;
+  const d=cur();
+  if(!order.length||oi>=order.length){order=shuffle(d.words.map((_,i)=>i));oi=0}
+  const entry=d.words[order[oi++]],emoji=entry[0],word=entry[1];
+  const base=d.letters.map(x=>x[0]),cand=[];word.split('').forEach((c,i)=>{if(base.indexOf(c)>=0)cand.push(i)});
+  const pos=cand[Math.floor(Math.random()*cand.length)],answer=word[pos];
+  const isV=c=>VOWELS.indexOf(c)>=0;
+  const alph=d.letters.map(x=>x[0]).filter(c=>c!==answer&&(c!=='Ñ'));
+  let pool=shuffle(alph.filter(c=>isV(c)===isV(answer)));
+  if(pool.length<2)pool=pool.concat(shuffle(alph.filter(c=>isV(c)!==isV(answer))));
+  const options=shuffle([answer,pool[0],pool[1]]);
+  $('gameEmoji').textContent=emoji;
+  $('incompleteWord').textContent=word.split('').map((c,i)=>i===pos?'_':c).join(' ');
+  const msg=$('gameMessage');msg.textContent='';msg.className='message';
+  const box=$('choices');box.innerHTML='';
+  options.forEach(letter=>{
+    const b=document.createElement('button');b.className='choice';b.textContent=letter;
+    b.onclick=()=>{
+      if(answered)return;answered=true;
+      $('incompleteWord').textContent=word.split('').join(' ');
+      if(letter===answer){
+        points+=10;hits++;msg.textContent='¡Muy bien! La palabra es '+word+'. +10 puntos 🎉';msg.className='message good';updateStats();speak(d.ok(word),d.code);
+      }else{
+        msg.textContent='La letra correcta es '+answer+'. La palabra completa es '+word+'.';msg.className='message bad';speak(d.bad(answer,word),d.code);
+      }
+      box.querySelectorAll('.choice').forEach(x=>{x.disabled=true;if(x.textContent===answer)x.classList.add('right')});
+    };
+    box.appendChild(b);
+  });
+}
+$('nextWord').onclick=renderWord;
+
+/* ---------- Idioma ---------- */
+function setLang(l){
+  lang=l;ss('aj_lang',l);
+  document.querySelectorAll('.lang').forEach(b=>{const on=b.dataset.lang===l;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+  stopVoice();clearCount();lastLetterSay='';lastNumber=-1;
+  $('numberCard').classList.add('hidden');
+  document.querySelectorAll('#numberGrid .tile').forEach(t=>t.classList.remove('selected'));
+  renderLetters();order=[];oi=0;renderWord();checkVoice();
+}
+Object.keys(DATA).forEach(k=>{
+  const b=document.createElement('button');b.className='lang';b.dataset.lang=k;b.textContent=DATA[k].flag+' '+DATA[k].name;
+  b.onclick=()=>setLang(k);$('langs').appendChild(b);
+});
+updateStats();setLang(lang);
+</script>
+</body>
+</html>
